@@ -128,3 +128,7 @@ CS 4632 – Simulation and Modeling
 
 ## License
 This project is intended for educational use as part of a university course.
+
+## Version Control
+This repository includes a `.gitignore` file configured for C# and .NET development to exclude build artifacts, IDE-specific files, and temporary data.
+
