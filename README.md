@@ -77,7 +77,7 @@ UML class and sequence diagrams describing the architecture and control flow are
 ## Repository Structure
 ├── src/ # C# simulation source code
 ├── docs/ # Project paper and documentation
-│ ├── CS_4632_Project.pdf
+│ ├── CS4632_Joshua_Gibson_M1.pdf
 │ └── uml/
 │ ├── class_diagram.puml
 │ └── sequence_diagram.puml
