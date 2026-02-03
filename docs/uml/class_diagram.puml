@@ -1,0 +1,195 @@
+@startuml
+title CPU Scheduling and Cache Performance Simulation - Class Diagram
+
+'-----------------------------
+' Core Simulation Controller
+'-----------------------------
+class SimulationEngine {
+  - currentTime: int
+  - endTime: int
+  - rng: Random
+  - eventQueue: PriorityQueue<SimEvent>
+  - cpu: CPU
+  - scheduler: IScheduler
+  - workloadGenerator: WorkloadGenerator
+  - metrics: MetricsCollector
+  + Run(): void
+  + Initialize(): void
+  + ScheduleEvent(e: SimEvent): void
+  + ProcessNextEvent(): void
+}
+
+'-----------------------------
+' Events (Discrete-Event Sim)
+'-----------------------------
+abstract class SimEvent {
+  + time: int
+  + type: EventType
+  + Execute(engine: SimulationEngine): void
+}
+
+class ProcessArrivalEvent {
+  + process: Process
+  + Execute(engine: SimulationEngine): void
+}
+
+class CpuTickOrDispatchEvent {
+  + Execute(engine: SimulationEngine): void
+}
+
+class ProcessCompleteEvent {
+  + process: Process
+  + Execute(engine: SimulationEngine): void
+}
+
+SimEvent <|-- ProcessArrivalEvent
+SimEvent <|-- CpuTickOrDispatchEvent
+SimEvent <|-- ProcessCompleteEvent
+
+enum EventType {
+  ARRIVAL
+  DISPATCH
+  COMPLETE
+}
+
+'-----------------------------
+' CPU + Cache
+'-----------------------------
+class CPU {
+  - cores: List<Core>
+  - cache: CacheModel
+  - contextSwitchCost: int
+  + IsIdle(): bool
+  + Dispatch(p: Process): void
+  + Preempt(coreId: int): void
+  + ExecuteSlice(coreId: int, timeSlice: int): int
+}
+
+class Core {
+  + id: int
+  + running: Process
+  + remainingSlice: int
+  + IsIdle(): bool
+}
+
+class CacheModel {
+  - hitProbability: double
+  - missPenalty: int
+  + IsHit(rng: Random): bool
+  + GetAccessDelay(rng: Random): int
+}
+
+CPU "1" *-- "1..*" Core
+CPU "1" *-- "1" CacheModel
+
+'-----------------------------
+' Process + Workload
+'-----------------------------
+class Process {
+  + pid: int
+  + arrivalTime: int
+  + totalBurstTime: int
+  + remainingTime: int
+  + priority: int
+  + memAccessRate: double
+  + state: ProcessState
+  + StartTime: int
+  + FinishTime: int
+  + OnCpuStart(time: int): void
+  + OnCpuStop(time: int): void
+}
+
+enum ProcessState {
+  NEW
+  READY
+  RUNNING
+  WAITING
+  TERMINATED
+}
+
+class WorkloadGenerator {
+  - rng: Random
+  - arrivalModel: ArrivalModel
+  + NextArrivalTime(currentTime: int): int
+  + CreateProcess(pid: int, arrivalTime: int): Process
+}
+
+interface ArrivalModel {
+  + SampleInterarrival(rng: Random): int
+}
+
+class PoissonArrivalModel {
+  - lambda: double
+  + SampleInterarrival(rng: Random): int
+}
+
+ArrivalModel <|.. PoissonArrivalModel
+WorkloadGenerator *-- ArrivalModel
+
+'-----------------------------
+' Scheduling
+'-----------------------------
+interface IScheduler {
+  + Enqueue(p: Process): void
+  + Dequeue(): Process
+  + ShouldPreempt(current: Process, incoming: Process): bool
+  + GetTimeSlice(): int
+  + Name(): string
+}
+
+class FCFSScheduler
+class RoundRobinScheduler {
+  - quantum: int
+  + GetTimeSlice(): int
+}
+class PriorityScheduler {
+  - preemptive: bool
+  + ShouldPreempt(current: Process, incoming: Process): bool
+}
+
+IScheduler <|.. FCFSScheduler
+IScheduler <|.. RoundRobinScheduler
+IScheduler <|.. PriorityScheduler
+
+'-----------------------------
+' Metrics
+'-----------------------------
+class MetricsCollector {
+  - waitingTimes: List<int>
+  - turnaroundTimes: List<int>
+  - contextSwitches: int
+  - cpuBusyTime: int
+  - cacheHits: int
+  - cacheMisses: int
+  + RecordArrival(p: Process): void
+  + RecordDispatch(p: Process, time: int): void
+  + RecordCompletion(p: Process, time: int): void
+  + RecordCacheAccess(hit: bool): void
+  + Report(): SimulationReport
+}
+
+class SimulationReport {
+  + avgWaitTime: double
+  + avgTurnaroundTime: double
+  + cpuUtilization: double
+  + cacheHitRate: double
+  + contextSwitchCount: int
+}
+
+MetricsCollector --> SimulationReport
+
+'-----------------------------
+' Relationships
+'-----------------------------
+SimulationEngine *-- CPU
+SimulationEngine o-- IScheduler
+SimulationEngine *-- WorkloadGenerator
+SimulationEngine *-- MetricsCollector
+SimulationEngine *-- "0..*" SimEvent
+
+WorkloadGenerator --> Process
+IScheduler --> Process
+CPU --> Process
+MetricsCollector --> Process
+
+@enduml

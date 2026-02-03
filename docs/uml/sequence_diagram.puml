@@ -1,0 +1,60 @@
+@startuml
+title Discrete-Event Simulation Main Loop - Sequence Diagram
+
+actor User
+participant SimulationEngine as Engine
+participant WorkloadGenerator as WG
+participant "PriorityQueue<SimEvent>" as EQ
+participant IScheduler as Sched
+participant CPU as CPU
+participant CacheModel as Cache
+participant MetricsCollector as Metrics
+
+User -> Engine: Run()
+Engine -> Engine: Initialize()
+Engine -> WG: NextArrivalTime(t=0)
+WG --> Engine: t_arrival
+Engine -> WG: CreateProcess(pid, t_arrival)
+WG --> Engine: Process p
+Engine -> Metrics: RecordArrival(p)
+Engine -> EQ: Schedule(ProcessArrivalEvent(p, t_arrival))
+
+loop while EQ not empty and currentTime < endTime
+  Engine -> EQ: PopNextEvent()
+  EQ --> Engine: SimEvent e
+  Engine -> Engine: currentTime = e.time
+  Engine -> e: Execute(Engine)
+
+  alt e is ProcessArrivalEvent
+    Engine -> Sched: Enqueue(p)
+    Engine -> WG: NextArrivalTime(currentTime)
+    WG --> Engine: t_next
+    Engine -> WG: CreateProcess(pid+1, t_next)
+    WG --> Engine: Process p2
+    Engine -> Metrics: RecordArrival(p2)
+    Engine -> EQ: Schedule(ProcessArrivalEvent(p2, t_next))
+    Engine -> EQ: Schedule(DispatchEvent(now))
+  else e is DispatchEvent
+    Engine -> CPU: IsIdle()
+    CPU --> Engine: idle?
+    alt CPU is idle and Sched has process
+      Engine -> Sched: Dequeue()
+      Sched --> Engine: p_run
+      Engine -> Metrics: RecordDispatch(p_run, currentTime)
+      Engine -> CPU: Dispatch(p_run)
+      Engine -> Cache: GetAccessDelay(rng)
+      Cache --> Engine: delay
+      Engine -> EQ: Schedule(CompleteOrNextSliceEvent(time=currentTime+slice+delay))
+    end
+  else e is CompletionEvent
+    Engine -> Metrics: RecordCompletion(p, currentTime)
+    Engine -> CPU: Dispatch(next or idle)
+    Engine -> EQ: Schedule(DispatchEvent(now))
+  end
+end
+
+Engine -> Metrics: Report()
+Metrics --> Engine: SimulationReport
+Engine --> User: Report output (tables/CSV)
+
+@enduml
