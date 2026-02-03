@@ -1,0 +1,33 @@
+## Build results
+bin/
+obj/
+
+## Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Logs
+*.log
+
+## OS-generated files
+.DS_Store
+Thumbs.db
+
+## Test results
+TestResults/
+
+## NuGet packages (optional)
+*.nupkg
+packages/
