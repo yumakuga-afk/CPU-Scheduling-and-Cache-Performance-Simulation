@@ -124,17 +124,17 @@ Configuration
 
 Simulation parameters are controlled via SimConfig:
 
-EndTime
+- EndTime
 
-ContextSwitchCost
+- ContextSwitchCost
 
-CacheHitProbability
+- CacheHitProbability
 
-CacheMissPenalty
+- CacheMissPenalty
 
-MeanInterarrivalTime
+- MeanInterarrivalTime
 
-ProcessCountTarget
+- ProcessCountTarget
 
 Example:
 
@@ -147,25 +147,25 @@ var config = new SimConfig
 };
 ```
 
-Expected Output
+## Expected Output
 
 Console output includes:
 
-Scheduler name
+- Scheduler name
 
-Completed processes
+- Completed processes
 
-Average wait time
+- Average wait time
 
-Average turnaround time
+- Average turnaround time
 
-CPU utilization
+- CPU utilization
 
-Context switches
+- Context switches
 
-Cache hit rate
+- Cache hit rate
 
-Cache miss count
+- Cache miss count
 
 Example output:
 
@@ -180,91 +180,93 @@ Context Switches: 73
 Cache Hit Rate: 84.31%
 Cache Misses: 112
 ```
-Architecture Overview
+# Architecture Overview
 
 The simulation follows a modular object-oriented architecture aligned with the UML diagrams included in docs/uml/.
 
-Core Components
-SimulationEngine
+## Core Components
+### SimulationEngine
 
-Controls the simulation clock
+- Controls the simulation clock
 
-Processes events from EventQueue
+- Processes events from EventQueue
 
-Coordinates scheduling and cache interaction
+- Coordinates scheduling and cache interaction
 
-EventQueue
+### EventQueue
 
-Maintains events sorted by simulation time
+- Maintains events sorted by simulation time
 
-Drives discrete-event execution
+- Drives discrete-event execution
 
-IScheduler Interface
+### IScheduler Interface
 
-Defines scheduling contract
+- Defines scheduling contract
 
-Implemented by:
+- Implemented by:
 
-FCFSScheduler
+   - FCFSScheduler
 
-RoundRobinScheduler
+   - RoundRobinScheduler
 
-SimProcess
+### SimProcess
 
-Represents workload entities
+- Represents workload entities
 
-Tracks arrival time, burst time, priority, memory access rate
+- Tracks arrival time, burst time, priority, memory access rate
 
-CacheModel
+### CacheModel
 
-Implements probabilistic hit/miss behavior
+- Implements probabilistic hit/miss behavior
 
-Injects execution delay on misses
+- Injects execution delay on misses
 
-MetricsCollector
+### MetricsCollector
 
-Tracks performance metrics
+- Tracks performance metrics
 
-Computes averages and utilization
+- Computes averages and utilization
 
-Mapping to UML Design
+# Mapping to UML Design
 
 The implementation directly corresponds to the UML diagrams:
 
-SimulationEngine → Central controller in class diagram
+- SimulationEngine → Central controller in class diagram
 
-IScheduler → Strategy pattern for scheduling
+- IScheduler → Strategy pattern for scheduling
 
-EventQueue → Event-driven architecture (sequence diagram)
+- EventQueue → Event-driven architecture (sequence diagram)
 
-CacheModel → Hardware abstraction layer
+- CacheModel → Hardware abstraction layer
 
-MetricsCollector → Reporting component
+- MetricsCollector → Reporting component
 
 Minor architectural refinements were made during implementation to:
 
-Simplify event type handling
+- Simplify event type handling
 
-Reduce unnecessary state transitions
+- Reduce unnecessary state transitions
 
-Improve modular separation between scheduling and cache logic
+- Improve modular separation between scheduling and cache logic
 
 These changes preserved the conceptual UML design while improving code clarity.
 
-Technologies Used
+# Technologies Used
 
-Programming Language: C#
+- Programming Language: C#
 
-Framework: .NET 8
+- Framework: .NET 8
 
-Simulation Type: Discrete-event simulation
+- Simulation Type: Discrete-event simulation
 
-IDE: Visual Studio
+- IDE: Visual Studio
 
-Documentation: LaTeX (ACM format)
+- Documentation: LaTeX (ACM format)
 
-Modeling: UML (Class + Sequence Diagrams)
+- Modeling: UML (Class + Sequence Diagrams)
 
+# Repository Structure
+```
 ├── src/               # C# simulation source code
 ├── docs/              # Project paper and documentation
 │   ├── CS4632_Joshua_Gibson_M1.pdf
@@ -272,27 +274,26 @@ Modeling: UML (Class + Sequence Diagrams)
 │       ├── class_diagram.puml
 │       └── sequence_diagram.puml
 ├── figures/           # Rendered UML diagrams
-├── README.md
-└── references/        # Research bibliography
+└── README.md
+```
+# Assumptions and Limitations
 
-Assumptions and Limitations
+- Single CPU model
 
-Single CPU model
+- Fixed context switch overhead
 
-Fixed context switch overhead
+- No inter-process communication
 
-No inter-process communication
+- Cache modeled probabilistically (not hardware-accurate)
 
-Cache modeled probabilistically (not hardware-accurate)
+- Focus on comparative performance trends rather than cycle-accurate simulation
 
-Focus on comparative performance trends rather than cycle-accurate simulation
-
-Author
+# Author
 
 Joshua Gibson
 Kennesaw State University
 CS 4632 – Simulation and Modeling
 
-License
+# License
 
 This project is intended for academic use only.
