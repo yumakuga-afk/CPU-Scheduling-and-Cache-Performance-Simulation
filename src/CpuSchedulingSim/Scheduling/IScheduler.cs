@@ -1,4 +1,4 @@
-﻿using CpuSchedulingSim.Models;
+using CpuSchedulingSim.Models;
 
 namespace CpuSchedulingSim.Scheduling;
 
@@ -8,5 +8,7 @@ public interface IScheduler
     void Enqueue(SimProcess p);
     SimProcess? Dequeue();
     bool HasReadyProcess { get; }
-    int GetTimeSlice(); // RR quantum; FCFS returns large slice
+    int GetTimeSlice();
+
+    bool ShouldPreempt(SimProcess current, SimProcess incoming);
 }
