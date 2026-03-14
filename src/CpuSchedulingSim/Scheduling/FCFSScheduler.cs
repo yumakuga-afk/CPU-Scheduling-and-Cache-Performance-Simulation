@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using CpuSchedulingSim.Models;
 
 namespace CpuSchedulingSim.Scheduling;
@@ -8,6 +8,8 @@ public sealed class FCFSScheduler : IScheduler
     private readonly Queue<SimProcess> _ready = new();
 
     public string Name => "FCFS";
+
+    public bool ShouldPreempt(SimProcess current, SimProcess incoming) => false;
 
     public void Enqueue(SimProcess p) => _ready.Enqueue(p);
 
