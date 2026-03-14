@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using CpuSchedulingSim.Models;
 
 namespace CpuSchedulingSim.Scheduling;
@@ -7,6 +7,8 @@ public sealed class RoundRobinScheduler : IScheduler
 {
     private readonly Queue<SimProcess> _ready = new();
     private readonly int _quantum;
+
+    public bool ShouldPreempt(SimProcess current, SimProcess incoming) => false;
 
     public RoundRobinScheduler(int timeQuantum)
     {
