@@ -194,9 +194,26 @@ internal static class Program
             var engine = new SimulationEngine(config, scheduler, generator);
             SimulationReport report = engine.Run();
 
+            string runId = $"run_{i + 1:D3}";
+            report = new SimulationReport
+            {
+                RunId = runId,
+                SchedulerName = report.SchedulerName,
+                EndTime = report.EndTime,
+                CompletedProcesses = report.CompletedProcesses,
+                AverageWaitTime = report.AverageWaitTime,
+                AverageTurnaroundTime = report.AverageTurnaroundTime,
+                CpuUtilization = report.CpuUtilization,
+                ContextSwitches = report.ContextSwitches,
+                CacheHits = report.CacheHits,
+                CacheMisses = report.CacheMisses,
+                CacheHitRate = report.CacheHitRate
+            };
+
             string outputDirectory = Path.Combine(AppContext.BaseDirectory, "Output");
             CsvExporter.ExportRunSummary(outputDirectory, report);
             CsvExporter.ExportPerProcessResults(outputDirectory, report.RunId, engine.Metrics.ProcessResults);
+
 
             Console.WriteLine($"--- Run {i + 1} / {runPlan.Count} ---");
             Console.WriteLine($"Scheduler: {report.SchedulerName}");
