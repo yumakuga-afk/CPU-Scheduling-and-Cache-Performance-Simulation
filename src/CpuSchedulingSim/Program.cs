@@ -109,8 +109,11 @@ internal static class Program
 
         int seed = PromptForInt("Enter random seed (default 42): ", minValue: 0, defaultValue: 42);
 
+        double lambda = PromptForDouble("Enter Poisson arrival rate lambda (default 0.2): ", minValue: 0.0001, defaultValue: 0.2);
+
         var runPlan = Enumerable.Repeat(schedulerType, runs).ToList();
-        ExecuteRunPlan(runPlan, quantum, seed);
+        ExecuteRunPlan(runPlan, quantum, seed, lambda);
+
     }
 
     private static void RunAllSchedulersInteractive()
@@ -121,9 +124,10 @@ internal static class Program
         int runs = PromptForInt("Enter total number of runs (minimum 3): ", minValue: 3);
         int quantum = PromptForInt("Enter Round Robin quantum: ", minValue: 1);
         int seed = PromptForInt("Enter random seed (default 42): ", minValue: 0, defaultValue: 42);
+        double lambda = PromptForDouble("Enter Poisson arrival rate lambda (default 0.2): ", minValue: 0.0001, defaultValue: 0.2);
 
         List<SchedulerType> runPlan = BuildAllSchedulerRunPlan(runs, seed);
-        ExecuteRunPlan(runPlan, quantum, seed);
+        ExecuteRunPlan(runPlan, quantum, seed, lambda);
     }
 
     private static void RunFromArguments(string[] args)
@@ -132,6 +136,8 @@ internal static class Program
         int runs = ParseIntArg(args, "--runs", 1);
         int quantum = ParseIntArg(args, "--quantum", 4);
         int seed = ParseIntArg(args, "--seed", 42);
+        double lambda = ParseDoubleArg(args, "--lambda", 0.2);
+
 
         if (runs < 1)
         {
@@ -157,10 +163,37 @@ internal static class Program
             runPlan = BuildAllSchedulerRunPlan(runs, seed);
         }
 
-        ExecuteRunPlan(runPlan, quantum, seed);
+        ExecuteRunPlan(runPlan, quantum, seed, lambda);
     }
 
-    private static void ExecuteRunPlan(List<SchedulerType> runPlan, int quantum, int seed)
+    private static double ParseDoubleArg(string[] args, string key, double defaultValue)
+    {
+        string raw = ParseStringArg(args, key, defaultValue.ToString());
+        return double.TryParse(raw, out double value) ? value : defaultValue;
+    }
+
+    private static double PromptForDouble(string prompt, double minValue, double? defaultValue = null)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            string? input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input) && defaultValue.HasValue)
+            {
+                return defaultValue.Value;
+            }
+
+            if (double.TryParse(input, out double value) && value >= minValue)
+            {
+                return value;
+            }
+
+            Console.WriteLine($"Please enter a number greater than or equal to {minValue}.");
+        }
+    }
+
+    private static void ExecuteRunPlan(List<SchedulerType> runPlan, int quantum, int seed, double lambda)
     {
         Console.WriteLine();
         Console.WriteLine("=== Running Simulation ===");
@@ -181,7 +214,7 @@ internal static class Program
                 ContextSwitchCost = 1,
                 CacheHitProbability = 0.85,
                 CacheMissPenalty = 3,
-                Lambda = 0.2,
+                Lambda = lambda,
                 ProcessCountTarget = 50,
                 SchedulerName = scheduler.Name
             };
