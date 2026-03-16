@@ -228,6 +228,7 @@ internal static class Program
             SimulationReport report = engine.Run();
 
             string runId = $"run_{i + 1:D3}";
+            report.RunId = runId;
             report = new SimulationReport
             {
                 RunId = runId,
