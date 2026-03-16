@@ -47,9 +47,7 @@ public sealed class SimulationEngine
             e.Execute(this);
         }
 
-        string runId = $"run_{_config.Seed:D3}";
         return _metrics.BuildReport(_scheduler.Name, _config.EndTime, runId);
-
 
     }
 
