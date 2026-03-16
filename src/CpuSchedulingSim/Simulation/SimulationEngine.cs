@@ -1,4 +1,4 @@
-﻿using CpuSchedulingSim.Hardware;
+using CpuSchedulingSim.Hardware;
 using CpuSchedulingSim.Metrics;
 using CpuSchedulingSim.Models;
 using CpuSchedulingSim.Scheduling;
@@ -8,6 +8,7 @@ namespace CpuSchedulingSim.Simulation;
 
 public sealed class SimulationEngine
 {
+    public MetricsCollector Metrics => _metrics;
     private readonly SimConfig _config;
     private readonly IScheduler _scheduler;
     private readonly WorkloadGenerator _generator;
@@ -46,7 +47,10 @@ public sealed class SimulationEngine
             e.Execute(this);
         }
 
-        return _metrics.BuildReport(_scheduler.Name, _config.EndTime);
+        string runId = $"run_{_config.Seed:D3}";
+        return _metrics.BuildReport(_scheduler.Name, _config.EndTime, runId);
+
+
     }
 
     private void Initialize()
