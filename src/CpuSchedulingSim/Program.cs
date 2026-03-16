@@ -2,6 +2,8 @@ using CpuSchedulingSim.Metrics;
 using CpuSchedulingSim.Scheduling;
 using CpuSchedulingSim.Simulation;
 using CpuSchedulingSim.Workload;
+using CpuSchedulingSim.Output;
+
 
 namespace CpuSchedulingSim;
 
@@ -191,6 +193,10 @@ internal static class Program
 
             var engine = new SimulationEngine(config, scheduler, generator);
             SimulationReport report = engine.Run();
+
+            string outputDirectory = Path.Combine(AppContext.BaseDirectory, "Output");
+            CsvExporter.ExportRunSummary(outputDirectory, report);
+            CsvExporter.ExportPerProcessResults(outputDirectory, report.RunId, engine.Metrics.ProcessResults);
 
             Console.WriteLine($"--- Run {i + 1} / {runPlan.Count} ---");
             Console.WriteLine($"Scheduler: {report.SchedulerName}");
