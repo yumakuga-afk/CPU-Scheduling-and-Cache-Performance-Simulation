@@ -47,7 +47,7 @@ public sealed class SimulationEngine
             e.Execute(this);
         }
 
-        return _metrics.BuildReport(_scheduler.Name, _config.EndTime, runId);
+        return _metrics.BuildReport(_scheduler.Name, _config.EndTime, "");
 
     }
 
