@@ -181,14 +181,14 @@ internal static class Program
                 ContextSwitchCost = 1,
                 CacheHitProbability = 0.85,
                 CacheMissPenalty = 3,
-                MeanInterarrivalTime = 6,
+                Lambda = 0.2,
                 ProcessCountTarget = 50,
                 SchedulerName = scheduler.Name
             };
 
             var generator = new WorkloadGenerator(
                 seed: config.Seed,
-                meanInterarrivalTime: config.MeanInterarrivalTime
+                lambda: config.Lambda
             );
 
             var engine = new SimulationEngine(config, scheduler, generator);
