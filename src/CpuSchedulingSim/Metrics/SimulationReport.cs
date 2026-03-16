@@ -16,5 +16,5 @@ public sealed class SimulationReport
     public int CacheMisses { get; init; }
     public double CacheHitRate { get; init; }
 
-    public string RunId { get; init; } = "";
+    public string RunId { get; set; } = "";
 }
