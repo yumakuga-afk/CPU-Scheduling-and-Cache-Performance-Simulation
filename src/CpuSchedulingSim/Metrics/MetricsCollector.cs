@@ -1,4 +1,4 @@
-﻿using CpuSchedulingSim.Models;
+using CpuSchedulingSim.Models;
 
 namespace CpuSchedulingSim.Metrics;
 
@@ -6,12 +6,15 @@ public sealed class MetricsCollector
 {
     private readonly List<int> _waitTimes = new();
     private readonly List<int> _turnaroundTimes = new();
+    private readonly List<ProcessResult> _processResults = new();
 
     public int ContextSwitches { get; private set; }
     public int CpuBusyTime { get; private set; }
 
     public int CacheHits { get; private set; }
     public int CacheMisses { get; private set; }
+
+    public IReadOnlyList<ProcessResult> ProcessResults => _processResults;
 
     public void AddCpuBusy(int amount) => CpuBusyTime += Math.Max(0, amount);
 
@@ -25,17 +28,29 @@ public sealed class MetricsCollector
 
     public void RecordCompletion(SimProcess p)
     {
-        if (p.FinishTime is null) return;
+        if (p.FinishTime is null)
+            return;
 
         int turnaround = p.FinishTime.Value - p.ArrivalTime;
-        int runTime = p.TotalBurstTime;
-        int wait = turnaround - runTime;
+        int wait = turnaround - p.TotalBurstTime;
 
         _turnaroundTimes.Add(turnaround);
         _waitTimes.Add(wait);
+
+        _processResults.Add(new ProcessResult
+        {
+            Pid = p.Pid,
+            ArrivalTime = p.ArrivalTime,
+            BurstTime = p.TotalBurstTime,
+            Priority = p.Priority,
+            FirstStartTime = p.FirstStartTime,
+            FinishTime = p.FinishTime,
+            WaitingTime = wait,
+            TurnaroundTime = turnaround
+        });
     }
 
-    public SimulationReport BuildReport(string schedulerName, int endTime)
+    public SimulationReport BuildReport(string schedulerName, int endTime, string runId)
     {
         double avgWait = _waitTimes.Count > 0 ? _waitTimes.Average() : 0.0;
         double avgTurn = _turnaroundTimes.Count > 0 ? _turnaroundTimes.Average() : 0.0;
@@ -54,7 +69,8 @@ public sealed class MetricsCollector
             ContextSwitches = ContextSwitches,
             CacheHits = CacheHits,
             CacheMisses = CacheMisses,
-            CacheHitRate = hitRate
+            CacheHitRate = hitRate,
+            RunId = runId
         };
     }
 }
