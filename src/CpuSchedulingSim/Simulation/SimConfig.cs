@@ -1,4 +1,4 @@
-﻿namespace CpuSchedulingSim.Simulation;
+namespace CpuSchedulingSim.Simulation;
 
 public sealed class SimConfig
 {
@@ -10,7 +10,9 @@ public sealed class SimConfig
     public double CacheHitProbability { get; set; } = 0.9;
     public int CacheMissPenalty { get; set; } = 3;
 
-    public int MeanInterarrivalTime { get; set; } = 6;
+    // Poisson arrival rate: average number of arrivals per simulation time unit
+    public double Lambda { get; set; } = 0.2;
+
     public int ProcessCountTarget { get; set; } = 50;
 
     public string SchedulerName { get; set; } = "Unknown";
