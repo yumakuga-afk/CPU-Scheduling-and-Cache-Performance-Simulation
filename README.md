@@ -1,140 +1,180 @@
 # CPU Scheduling and Cache Performance Simulation
 
 ## Overview
-This project implements a discrete-event simulation to study the behavior of CPU scheduling algorithms and simplified cache performance models. The simulation evaluates trade-offs between fairness, responsiveness, and throughput under mixed workloads that include both CPU-bound and I/O-bound processes.
 
-Developed as part of **CS 4632 – Simulation and Modeling** at **Kennesaw State University**, this project integrates classical operating systems theory with discrete-event simulation techniques.
+This project is a discrete-event simulation system designed to model and analyze CPU scheduling behavior and cache performance under varying workloads. The simulation evaluates how different scheduling strategies impact system efficiency, fairness, responsiveness, and resource utilization.
 
----
+Developed as part of **CS 4632 – Modeling and Simulation** at **Kennesaw State University**, this project combines operating systems theory, stochastic workload modeling, and performance analysis into a configurable simulation framework.
 
-# Project Status
+The simulation implements and compares:
 
-## ✅ Implemented So Far
+* First-Come First-Serve (FCFS)
+* Round Robin (RR)
+* Priority Scheduling (Preemptive and Non-Preemptive)
 
-### Core Simulation Framework
-- Discrete-event simulation engine
-- Chronological event queue
-- Global simulation clock
-- Event-driven execution model
-
-### Scheduling Algorithms
-- First-Come First-Served (FCFS)
-- Round Robin (RR) with configurable time quantum
-
-### Memory Hierarchy Model
-- Probabilistic cache hit/miss model
-- Configurable hit probability
-- Configurable miss penalty delay
-- Cache performance metrics collection
-
-### Metrics Collection
-- Average waiting time
-- Average turnaround time
-- CPU utilization
-- Context switch count
-- Cache hit rate and miss count
+It also integrates a probabilistic cache hit/miss model to simulate realistic execution delays.
 
 ---
 
-## 🚧 Still To Come
+# Project Features
 
-- Priority Scheduling implementation
-- CSV export for performance analysis
-- Command-line configuration support
-- Multi-core simulation support
-- Extended workload modeling (Poisson/exponential arrivals)
-- Visualization or graph generation for performance comparison
+## Core Simulation Framework
 
----
-
-## 🔄 Changes from Original Proposal
-
-- Cache modeling simplified to a probabilistic delay model rather than detailed cache-line simulation
-- Initial version uses deterministic interarrival ranges instead of full stochastic distributions
-- Priority scheduling deferred to later milestone
-
-These changes were made to ensure a working baseline implementation while preserving extensibility.
+* Discrete-event simulation engine
+* Event-driven execution model
+* Global simulation clock
+* Configurable simulation duration
+* Automated event processing
 
 ---
 
-# Installation Instructions
+## Scheduling Algorithms
 
-## Dependencies
+### First-Come First-Serve (FCFS)
 
-- .NET 8.0 SDK (recommended)
-- Visual Studio 2022 (or newer)
-  OR
-- Visual Studio Code with C# extension
+* FIFO process execution
+* Simple and predictable scheduling behavior
 
-### Verify .NET Installation
-Run:
-dotnet --version
+### Round Robin (RR)
 
+* Configurable time quantum
+* Fair CPU distribution
+* Context switching support
 
-You should see version 8.x.x or similar.
+### Priority Scheduling (Non-Preemptive)
 
----
+* Higher-priority process selection
+* Arrival-order tie-breaking
 
-## Step-by-Step Setup
+### Priority Scheduling (Preemptive)
 
-### Using Visual Studio
-
-1. Clone or download the repository
-2. Open `CpuSchedulingSim.sln`
-3. Build the solution
-4. Run the project
+* Dynamic process interruption
+* Immediate priority enforcement
 
 ---
 
-## Troubleshooting
+## Workload Modeling
 
-### Issue: `dotnet not recognized`
-Install the .NET SDK from:
-https://dotnet.microsoft.com/download
+* Poisson-based process arrivals
+* Exponentially distributed interarrival times
+* Configurable process generation rate
+* Configurable workload size
 
-### Issue: Build errors about missing SDK
-Ensure the correct .NET version is installed and selected.
+---
 
-### Issue: No output or simulation ends immediately
-Check configuration values in `Program.cs`:
-- EndTime
-- ProcessCountTarget
-- CacheHitProbability
+## Cache Performance Simulation
+
+* Probabilistic cache hit/miss modeling
+* Configurable hit probability
+* Configurable miss penalties
+* Cache performance tracking
+
+---
+
+## Metrics Collection
+
+The simulation tracks:
+
+* Average waiting time
+* Average turnaround time
+* CPU utilization
+* Context switch count
+* Completed process count
+* Cache hits
+* Cache misses
+* Cache hit rate
+
+---
+
+## Data Export
+
+Simulation results are exported automatically:
+
+* Run summary CSV
+* Process logs
+* Event logs
+* Aggregate performance summaries
+
+---
+
+# Installation
+
+## Requirements
+
+* .NET 8 SDK
+* Visual Studio 2022 or newer
+
+OR
+
+* Visual Studio Code + C# Extension
+
+---
+
+## Clone Repository
+
+```bash
+git clone https://github.com/yumakuga-afk/CPU-Scheduling-and-Cache-Performance-Simulation.git
+cd CPU-Scheduling-and-Cache-Performance-Simulation
+```
+
+---
+
+## Build Project
+
+```bash
+dotnet build
+```
+
+---
+
+## Run Project
+
+```bash
+dotnet run
+```
 
 ---
 
 # Usage
 
-## Running the Simulation
+## Scheduler Selection
 
-The simulation runs from `Program.cs`.
+Scheduler selection is configurable through runtime parameters.
 
-To switch scheduling algorithms:
+Examples:
 
-```csharp
-IScheduler scheduler = new RoundRobinScheduler(timeQuantum: 4);
-// OR
-IScheduler scheduler = new FCFSScheduler();
+Run FCFS:
+
+```bash
+dotnet run fcfs
 ```
-Then run:
 
-dotnet run
+Run Round Robin:
 
-Configuration
+```bash
+dotnet run rr
+```
 
-Simulation parameters are controlled via SimConfig:
+Run Priority Scheduling:
 
-- EndTime
+```bash
+dotnet run priority
+```
 
-- ContextSwitchCost
+---
 
-- CacheHitProbability
+## Configuration Parameters
 
-- CacheMissPenalty
+Simulation behavior is controlled using configurable parameters:
 
-- MeanInterarrivalTime
-
-- ProcessCountTarget
+* EndTime
+* ProcessCountTarget
+* MeanInterarrivalTime
+* CacheHitProbability
+* CacheMissPenalty
+* ContextSwitchCost
+* TimeQuantum
+* RandomSeed
 
 Example:
 
@@ -142,158 +182,191 @@ Example:
 var config = new SimConfig
 {
     EndTime = 500,
+    ProcessCountTarget = 100,
+    MeanInterarrivalTime = 0.5,
     CacheHitProbability = 0.85,
-    CacheMissPenalty = 3
+    CacheMissPenalty = 3,
+    TimeQuantum = 8
 };
 ```
 
-## Expected Output
+---
 
-Console output includes:
+# Example Output
 
-- Scheduler name
+Example run summary:
 
-- Completed processes
-
-- Average wait time
-
-- Average turnaround time
-
-- CPU utilization
-
-- Context switches
-
-- Cache hit rate
-
-- Cache miss count
-
-Example output:
-
-Scheduler: Round Robin (q=4)
-Completed Processes: 48
-
-```csharp
-Avg Wait Time: 12.53
-Avg Turnaround Time: 22.91
-CPU Utilization: 87.42%
-Context Switches: 73
-Cache Hit Rate: 84.31%
-Cache Misses: 112
+```text
+Scheduler: Priority Scheduling (Preemptive)
+Completed Processes: 42
+Average Wait Time: 108.71
+Average Turnaround Time: 119.19
+CPU Utilization: 91.6%
+Context Switches: 45
+Cache Hit Rate: 92.41%
+Cache Misses: 6
 ```
-# Architecture Overview
 
-The simulation follows a modular object-oriented architecture aligned with the UML diagrams included in docs/uml/.
+---
+
+# Experimental Results Summary
+
+Key findings from 15 simulation runs:
+
+## Best Waiting Time
+
+FCFS: 97.76
+
+## Best Turnaround Time
+
+FCFS: 108.55
+
+## Best CPU Utilization
+
+Priority Scheduling: 93.2%
+
+## Highest Context Switching
+
+Round Robin: 76
+
+## Best Cache Hit Rate
+
+Round Robin: 93.02%
+
+## Overall Best Performer
+
+Priority Scheduling (based on consistency)
+
+---
+
+# System Architecture
+
+Core system flow:
+
+Process Generation
+→ Scheduler Selection
+→ CPU Execution
+→ Cache Simulation
+→ Metrics Collection
+→ Data Export
+
+---
 
 ## Core Components
+
 ### SimulationEngine
 
-- Controls the simulation clock
+Controls simulation execution and event flow.
 
-- Processes events from EventQueue
+### Process
 
-- Coordinates scheduling and cache interaction
+Represents workload entities.
 
-### EventQueue
+### Scheduler Interface
 
-- Maintains events sorted by simulation time
+Defines scheduling contract.
 
-- Drives discrete-event execution
+Implemented by:
 
-### IScheduler Interface
+* FCFSScheduler
+* RoundRobinScheduler
+* PriorityScheduler
 
-- Defines scheduling contract
+### CacheSimulator
 
-- Implemented by:
-
-   - FCFSScheduler
-
-   - RoundRobinScheduler
-
-### SimProcess
-
-- Represents workload entities
-
-- Tracks arrival time, burst time, priority, memory access rate
-
-### CacheModel
-
-- Implements probabilistic hit/miss behavior
-
-- Injects execution delay on misses
+Handles cache hit/miss behavior.
 
 ### MetricsCollector
 
-- Tracks performance metrics
+Tracks and computes performance metrics.
 
-- Computes averages and utilization
+### DataExporter
 
-# Mapping to UML Design
+Exports simulation output.
 
-The implementation directly corresponds to the UML diagrams:
+---
 
-- SimulationEngine → Central controller in class diagram
+# UML Diagrams
 
-- IScheduler → Strategy pattern for scheduling
+Located in:
 
-- EventQueue → Event-driven architecture (sequence diagram)
+```text
+/docs/uml/
+```
 
-- CacheModel → Hardware abstraction layer
+Includes:
 
-- MetricsCollector → Reporting component
+* Class diagrams
+* Architecture diagrams
 
-Minor architectural refinements were made during implementation to:
-
-- Simplify event type handling
-
-- Reduce unnecessary state transitions
-
-- Improve modular separation between scheduling and cache logic
-
-These changes preserved the conceptual UML design while improving code clarity.
-
-# Technologies Used
-
-- Programming Language: C#
-
-- Framework: .NET 8
-
-- Simulation Type: Discrete-event simulation
-
-- IDE: Visual Studio
-
-- Documentation: LaTeX (ACM format)
-
-- Modeling: UML (Class + Sequence Diagrams)
+---
 
 # Repository Structure
-```
-├── src/               # C# simulation source code
-├── docs/              # Project paper and documentation
-│   ├── CS4632_Joshua_Gibson_M1.pdf
+
+```text
+├── src/
+│   ├── Schedulers/
+│   ├── Simulation/
+│   ├── Cache/
+│   ├── Models/
+│   └── Export/
+├── docs/
+│   ├── Final_Report.pdf
 │   └── uml/
-│       ├── class_diagram.puml
-│       └── sequence_diagram.puml
-├── figures/           # Rendered UML diagrams
+├── output/
+│   ├── run_summaries/
+│   ├── event_logs/
+│   └── process_logs/
+├── figures/
 └── README.md
 ```
+
+---
+
 # Assumptions and Limitations
 
-- Single CPU model
+* Single CPU simulation
+* Simplified probabilistic cache model
+* Synthetic workloads
+* Fixed context switch overhead
+* No multicore support
 
-- Fixed context switch overhead
+---
 
-- No inter-process communication
+# Future Improvements
 
-- Cache modeled probabilistically (not hardware-accurate)
+Planned future enhancements:
 
-- Focus on comparative performance trends rather than cycle-accurate simulation
+* Shortest Job First (SJF)
+* Shortest Remaining Time First (SRTF)
+* Multilevel Queue Scheduling
+* Multilevel Feedback Queue Scheduling
+* Multicore CPU support
+* Advanced cache hierarchy modeling
+* GUI visualization
+* Real-world workload traces
+
+---
+
+# Documentation
+
+Project documentation includes:
+
+* Final LaTeX report
+* UML diagrams
+* Performance graphs
+* Experimental results
+
+---
 
 # Author
 
 Joshua Gibson
 Kennesaw State University
-CS 4632 – Simulation and Modeling
+CS 4632 – Modeling and Simulation
+
+---
 
 # License
 
-This project is intended for academic use only.
+Academic use only.
